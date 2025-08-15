@@ -9,28 +9,25 @@ use Illuminate\Support\Facades\Validator;
 
 class ScoreController extends Controller
 {
-    // Fungsi untuk menampilkan semua skor (leaderboard)
     public function index()
     {
-        // Ambil data skor, urutkan dari yang TERENDAH, ambil 10 teratas
         $scores = Score::orderBy('score', 'asc')->take(10)->get();
         return response()->json($scores);
     }
 
     public function showByGame($game_name)
     {
-        // Tentukan urutan berdasarkan nama game
-        $orderDirection = ($game_name === 'Tebak Angka') ? 'asc' : 'desc';
 
-        $scores = Score::where('game_name', $game_name)
-                        ->orderBy('score', $orderDirection)
-                        ->take(4) // Ambil 4 teratas
-                        ->get();
+    $lowerIsBetterGames = ['Tebak Angka', 'Puzzle Geser', 'Minesweeper'];
+    $orderDirection = in_array($game_name, $lowerIsBetterGames) ? 'asc' : 'desc';
+    $scores = Score::where('game_name', $game_name)
+                    ->orderBy('score', $orderDirection)
+                    ->take(5) 
+                    ->get();
 
-        return response()->json($scores);
+    return response()->json($scores);
     }
 
-    // Fungsi untuk menyimpan skor baru
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
